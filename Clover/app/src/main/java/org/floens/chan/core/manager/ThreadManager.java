@@ -1,6 +1,7 @@
 /*
  * Clover - 4chan browser https://github.com/Floens/Clover/
  * Copyright (C) 2014  Floens
+ * Copyright (C) 2014  wingy
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -346,7 +347,7 @@ public class ThreadManager implements Loader.LoaderListener {
                     + post.imageHeight + "\nSize: " + Utils.getReadableFileSize(post.fileSize, false) + "\n\n";
         }
 
-        text += "Time: " + post.date;
+        text += "Time: " + post.tim; // TODO: Humanize the time
 
         if (!TextUtils.isEmpty(post.id)) {
             text += "\nId: " + post.id;

@@ -1,6 +1,7 @@
 /*
  * Clover - 4chan browser https://github.com/Floens/Clover/
  * Copyright (C) 2014  Floens
+ * Copyright (C) 2014  wingy
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +41,6 @@ public class Post {
     public int no = -1;
     public int resto = -1;
     public boolean isOP = false;
-    public String date;
     public String name = "";
     public CharSequence comment = "";
     public String subject = "";
@@ -115,13 +115,13 @@ public class Post {
         if (board == null)
             return false;
 
-        if (no < 0 || resto < 0 || date == null || time < 0)
+       if (no < 0 || resto < 0 || time < 0)
             return false;
 
         isOP = resto == 0;
 
-        if (isOP && (replies < 0 || images < 0))
-            return false;
+        //if (isOP && (replies < 0 || images < 0))
+        //    return false;
 
         if (ext != null) {
             hasImage = true;
@@ -131,7 +131,7 @@ public class Post {
             if (filename == null || ext == null || imageWidth <= 0 || imageHeight <= 0 || tim < 0)
                 return false;
 
-            imageUrl = ChanUrls.getImageUrl(board, Long.toString(tim), ext);
+            imageUrl = ChanUrls.getImageUrl(board, Long.toString(tim), ext, false);
             filename = Parser.unescapeEntities(filename, false);
 
             if (spoiler) {
@@ -142,7 +142,7 @@ public class Post {
                     thumbnailUrl = ChanUrls.getSpoilerUrl();
                 }
             } else {
-                thumbnailUrl = ChanUrls.getThumbnailUrl(board, Long.toString(tim));
+                thumbnailUrl = ChanUrls.getImageUrl(board, Long.toString(tim), ext, true);
             }
         }
 

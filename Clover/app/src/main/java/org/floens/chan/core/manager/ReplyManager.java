@@ -1,6 +1,7 @@
 /*
  * Clover - 4chan browser https://github.com/Floens/Clover/
  * Copyright (C) 2014  Floens
+ * Copyright (C) 2014  wingy
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -343,7 +344,7 @@ public class ReplyManager {
     public void sendReply(final Reply reply, final ReplyListener listener) {
         Logger.i(TAG, "Sending reply request: " + reply.board + ", " + reply.resto);
 
-        HttpPost httpPost = new HttpPost(ChanUrls.getReplyUrl(reply.board));
+        HttpPost httpPost = new HttpPost(ChanUrls.getReplyUrl());
 
         MultipartEntityBuilder entity = MultipartEntityBuilder.create();
 

@@ -1,6 +1,7 @@
 /*
  * Clover - 4chan browser https://github.com/Floens/Clover/
  * Copyright (C) 2014  Floens
+ * Copyright (C) 2014  wingy
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +33,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ChanReaderRequest extends JsonReaderRequest<List<Post>> {
     private Loadable loadable;
@@ -286,9 +289,6 @@ public class ChanReaderRequest extends JsonReaderRequest<List<Post>> {
                     long time = reader.nextLong();
                     post.date = new Date(time * 1000);*/
                     break;
-                case "now":
-                    post.date = reader.nextString();
-                    break;
                 case "name":
                     post.name = reader.nextString();
                     break;
@@ -296,7 +296,11 @@ public class ChanReaderRequest extends JsonReaderRequest<List<Post>> {
                     post.rawComment = reader.nextString();
                     break;
                 case "tim":
-                    post.tim = reader.nextLong();
+                    // TODO: Cache the regex object.
+                    Pattern regex = Pattern.compile("(\\d+)");
+                    Matcher match = regex.matcher(reader.nextString());
+                    match.find();
+                    post.tim = Long.parseLong(match.group());
                     break;
                 case "time":
                     post.time = reader.nextLong();

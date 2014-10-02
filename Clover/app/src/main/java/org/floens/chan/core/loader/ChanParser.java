@@ -1,6 +1,7 @@
 /*
  * Clover - 4chan browser https://github.com/Floens/Clover/
  * Copyright (C) 2014  Floens
+ * Copyright (C) 2014  wingy
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -303,64 +304,38 @@ public class ChanParser {
 
     private CharSequence parseAnchor(Post post, Element anchor) {
         String href = anchor.attr("href");
-        Set<String> classes = anchor.classNames();
 
         PostLinkable.Type t = null;
         String key = null;
         Object value = null;
-        if (classes.contains("quotelink")) {
-            if (href.contains("/thread/")) {
+        Pattern regex = Pattern.compile("/(\\w+)/res/(\\d+)\\.html#(\\d+)");
+        Matcher matcher = regex.matcher(href);
+        if (anchor.text().startsWith(">>") && matcher.find()) {
+            String board = matcher.group(1);
+            int threadId = Integer.parseInt(matcher.group(2));
+            int postId = Integer.parseInt(matcher.group(3));
+            if (threadId != post.resto || !board.equals(post.board)) {
                 // link to another thread
-                PostLinkable.ThreadLink threadLink = null;
-
-                String[] slashSplit = href.split("/");
-                if (slashSplit.length == 4) {
-                    String board = slashSplit[1];
-                    String nums = slashSplit[3];
-                    String[] numsSplitted = nums.split("#p");
-                    if (numsSplitted.length == 2) {
-                        try {
-                            int tId = Integer.parseInt(numsSplitted[0]);
-                            int pId = Integer.parseInt(numsSplitted[1]);
-                            threadLink = new PostLinkable.ThreadLink(board, tId, pId);
-                        } catch (NumberFormatException e) {
-                        }
-                    }
-                }
-
-                if (threadLink != null) {
-                    t = PostLinkable.Type.THREAD;
-                    key = anchor.text() + " \u2192"; // arrow to the right
-                    value = threadLink;
-                }
+                PostLinkable.ThreadLink threadLink = new PostLinkable.ThreadLink(board, threadId, postId);
+                t = PostLinkable.Type.THREAD;
+                key = anchor.text() + " \u2192"; // arrow to the right
+                value = threadLink;
             } else {
                 // normal quote
-                int id = -1;
+                t = PostLinkable.Type.QUOTE;
+                key = anchor.text();
+                value = postId;
+                post.repliesTo.add(postId);
 
-                String[] splitted = href.split("#p");
-                if (splitted.length == 2) {
-                    try {
-                        id = Integer.parseInt(splitted[1]);
-                    } catch (NumberFormatException e) {
-                    }
+                // Append OP when its a reply to OP
+                if (postId == post.resto) {
+                    key += " (OP)";
                 }
 
-                if (id >= 0) {
-                    t = PostLinkable.Type.QUOTE;
-                    key = anchor.text();
-                    value = id;
-                    post.repliesTo.add(id);
-
-                    // Append OP when its a reply to OP
-                    if (id == post.resto) {
-                        key += " (OP)";
-                    }
-
-                    // Append You when it's a reply to an saved reply
-                    // todo synchronized
-                    if (ChanApplication.getDatabaseManager().isSavedReply(post.board, id)) {
-                        key += " (You)";
-                    }
+                // Append You when it's a reply to an saved reply
+                // todo synchronized
+                if (ChanApplication.getDatabaseManager().isSavedReply(post.board, postId)) {
+                    key += " (You)";
                 }
             }
         } else {
@@ -370,16 +345,12 @@ public class ChanParser {
             value = href;
         }
 
-        if (t != null && key != null && value != null) {
-            SpannableString link = new SpannableString(key);
-            PostLinkable pl = new PostLinkable(post, key, value, t);
-            link.setSpan(pl, 0, link.length(), 0);
-            post.linkables.add(pl);
+        SpannableString link = new SpannableString(key);
+        PostLinkable pl = new PostLinkable(post, key, value, t);
+        link.setSpan(pl, 0, link.length(), 0);
+        post.linkables.add(pl);
 
-            return link;
-        } else {
-            return null;
-        }
+        return link;
     }
 
     private void detectLinks(Post post, String text, SpannableString spannable) {

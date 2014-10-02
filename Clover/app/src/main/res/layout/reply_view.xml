@@ -54,7 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         <!-- response view: -->
 
-        <org.floens.chan.ui.view.LoadView
+        <org.wingy.chan.ui.view.LoadView
             android:id="@+id/reply_response"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

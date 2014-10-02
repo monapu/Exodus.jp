@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         android:text="@string/reply_captcha_tap_to_reload"
         android:textSize="14sp" />
 
-    <org.floens.chan.ui.view.LoadView
+    <org.wingy.chan.ui.view.LoadView
         android:id="@+id/reply_captcha_container"
         android:layout_width="match_parent"
         android:layout_height="100dp"

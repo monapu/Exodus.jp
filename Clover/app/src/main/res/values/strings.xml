@@ -2,6 +2,7 @@
 <!--
 Clover - 4chan browser https://github.com/Floens/Clover/
 Copyright (C) 2014  Floens
+Copyright (C) 2014  wingy
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -125,7 +126,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <string name="reply_insert_spoiler">[spoiler]</string>
     <string name="reply_insert_code">[code]</string>
 
-    <string name="reply_submit">Submit</string>
+    <string name="reply_submit">NOT IMPLEMENTED</string>
     <string name="reply_captcha">Enter the text</string>
     <string name="reply_error">Error sending reply</string>
     <string name="reply_error_captcha">Wrong captcha</string>

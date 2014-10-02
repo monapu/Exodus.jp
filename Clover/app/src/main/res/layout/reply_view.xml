@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?><!--
 Clover - 4chan browser https://github.com/Floens/Clover/
 Copyright (C) 2014  Floens
+Copyright (C) 2014  wingy
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -78,6 +79,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             android:id="@+id/reply_submit"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
+            android:enabled="false"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/reply_submit" />

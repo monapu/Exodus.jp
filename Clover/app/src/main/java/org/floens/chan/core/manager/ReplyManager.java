@@ -168,22 +168,6 @@ public class ReplyManager {
         public abstract void onFileLoading();
     }
 
-    /**
-     * Get the CAPTCHA challenge hash from an JSON response.
-     *
-     * @param total The total response from the server
-     * @return The pattern, or null when none was found.
-     */
-    public static String getChallenge(String total) {
-        Matcher matcher = challengePattern.matcher(total);
-
-        if (matcher.find() && matcher.groupCount() == 1) {
-            return matcher.group(1);
-        } else {
-            return null;
-        }
-    }
-
     public void sendPass(Pass pass, final PassListener listener) {
         Logger.i(TAG, "Sending pass login request");
 
@@ -353,29 +337,28 @@ public class ReplyManager {
         entity.addTextBody("name", reply.name, TEXT_UTF_8);
         entity.addTextBody("email", reply.email, TEXT_UTF_8);
 
-        entity.addTextBody("sub", reply.subject, TEXT_UTF_8);
-        entity.addTextBody("com", reply.comment, TEXT_UTF_8);
+        entity.addTextBody("subject", reply.subject, TEXT_UTF_8);
+        entity.addTextBody("body", reply.comment, TEXT_UTF_8);
+
+        entity.addTextBody("post", reply.resto == 0 ? "New Topic" : "New Reply");
 
         if (reply.resto >= 0) {
-            entity.addTextBody("resto", Integer.toString(reply.resto));
+            entity.addTextBody("thread", Integer.toString(reply.resto));
         }
 
         if (reply.spoilerImage) {
             entity.addTextBody("spoiler", "on");
         }
 
-        entity.addTextBody("recaptcha_challenge_field", reply.captchaChallenge);
-        entity.addTextBody("recaptcha_response_field", reply.captchaResponse, TEXT_UTF_8);
+        entity.addTextBody("password", reply.password);
 
-        entity.addTextBody("mode", "regist");
-        entity.addTextBody("pwd", reply.password);
-
+        // TODO: Review property
         if (reply.usePass) {
             httpPost.addHeader("Cookie", "pass_id=" + reply.passId);
         }
 
         if (reply.file != null) {
-            entity.addBinaryBody("upfile", reply.file, ContentType.APPLICATION_OCTET_STREAM, reply.fileName);
+            entity.addBinaryBody("file", reply.file, ContentType.APPLICATION_OCTET_STREAM, reply.fileName);
         }
 
         httpPost.setEntity(entity.build());

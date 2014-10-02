@@ -1,6 +1,7 @@
 /*
  * Clover - 4chan browser https://github.com/Floens/Clover/
  * Copyright (C) 2014  Floens
+ * Copyright (C) 2014  wingy
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -135,18 +136,17 @@ public class BoardManager {
     }
 
     private void setBoardsFromServer(List<Board> serverList) {
-        boolean has;
         for (Board serverBoard : serverList) {
-            has = false;
-            for (int i = 0; i < allBoards.size(); i++) {
-                if (allBoards.get(i).value.equals(serverBoard.value)) {
+            boolean has = false;
+            for (int j = 0; j < allBoards.size(); j++) {
+                if (allBoards.get(j).value.equals(serverBoard.value)) {
                     Logger.d(TAG, "Replaced board " + serverBoard.value + " with the server one");
 
-                    Board old = allBoards.get(i);
+                    Board old = allBoards.get(j);
                     serverBoard.id = old.id;
                     serverBoard.saved = old.saved;
                     serverBoard.order = old.order;
-                    allBoards.set(i, serverBoard);
+                    allBoards.set(j, serverBoard);
 
                     has = true;
                     break;
@@ -186,11 +186,15 @@ public class BoardManager {
 
     private List<Board> getDefaultBoards() {
         List<Board> list = new ArrayList<>();
-        list.add(new Board("Technology", "g", true, true));
-        list.add(new Board("Video Games", "v", true, true));
+        list.add(new Board("Vidya Games", "v", true, true));
         list.add(new Board("Anime & Manga", "a", true, true));
+        list.add(new Board("Traditional Games", "tg", true, true));
+        list.add(new Board("Fitness", "fit", true, true));
+        list.add(new Board("Politically Incorrect", "pol", true, true));
+        list.add(new Board("Technology", "tech", true, true));
+        list.add(new Board("Music", "mu", true, true));
         list.add(new Board("Comics & Cartoons", "co", true, true));
-        list.add(new Board("International", "int", true, true));
+        list.add(new Board("Sports", "sp", true, true));
         return list;
     }
 

@@ -1,6 +1,7 @@
 /*
  * Clover - 4chan browser https://github.com/Floens/Clover/
  * Copyright (C) 2014  Floens
+ * Copyright (C) 2014  wingy
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,8 +32,6 @@ public class Reply {
     public int resto = 0;
     public File file;
     public String fileName = "";
-    public String captchaChallenge = "";
-    public String captchaResponse = "";
     public String password = "";
     public boolean usePass = false;
     public String passId = "";

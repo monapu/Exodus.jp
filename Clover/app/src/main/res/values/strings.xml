@@ -18,7 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <resources>
-    <string name="app_name">Clover</string>
+    <string name="app_name">Exodus</string>
 
     <string name="cancel">Cancel</string>
     <string name="change">Change</string>
@@ -51,7 +51,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <string name="search_results">Found %1$s %2$s for "%3$s"</string>
 
     <string name="open_unknown_title">Unsupported link</string>
-    <string name="open_unknown">Clover can\'t open this link. Opening it in your browser instead.</string>
+    <string name="open_unknown">Exodus can\'t open this link. Opening it in your browser instead.</string>
     <string name="open_link_failed">No applications found to open link</string>
 
     <string name="image_save">Save image</string>
@@ -238,7 +238,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <string name="watch_countdown_description">Show a countdown left of the new post counter</string>
 
     <string name="watch_enable_background">Enable in the background</string>
-    <string name="watch_enable_background_description">Watch pins when Clover is in the background</string>
+    <string name="watch_enable_background_description">Watch pins when Exodus is in the background</string>
     <string name="watch_background_timeout_description">Time between loads in background</string>
     <string-array name="watch_background_timeouts">
         <item>1 minute</item>

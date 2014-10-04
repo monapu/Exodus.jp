@@ -33,14 +33,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             android:targetClass="org.wingy.chan.ui.activity.WatchSettingsActivity"
             android:targetPackage="org.wingy.chan" />
     </Preference>
-    <Preference
-        android:key="pass_settings"
-        android:title="@string/preference_pass_settings">
-        <intent
-            android:action="android.intent.action.VIEW"
-            android:targetClass="org.wingy.chan.ui.activity.PassSettingsActivity"
-            android:targetPackage="org.wingy.chan" />
-    </Preference>
 
     <PreferenceCategory android:title="@string/preference_browsing">
         <ListPreference

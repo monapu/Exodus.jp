@@ -161,12 +161,6 @@ public class SettingsFragment extends PreferenceFragment {
             watchPreference.setSummary(ChanPreferences.getWatchEnabled() ? R.string.watch_summary_enabled
                     : R.string.watch_summary_disabled);
         }
-
-        final Preference passPreference = findPreference("pass_settings");
-        if (passPreference != null) {
-            passPreference.setSummary(ChanPreferences.getPassEnabled() ? R.string.pass_summary_enabled
-                    : R.string.pass_summary_disabled);
-        }
     }
 
     private ListView getListView() {

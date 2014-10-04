@@ -258,12 +258,6 @@ public class ReplyFragment extends DialogFragment {
         imageViewContainer = (LoadView) container.findViewById(R.id.reply_image);
         responseContainer = (LoadView) container.findViewById(R.id.reply_response);
 
-        if (ChanPreferences.getPassEnabled()) {
-            ((TextView) container.findViewById(R.id.reply_captcha_text)).setText(R.string.pass_using);
-            container.findViewById(R.id.reply_captcha_container).setVisibility(View.GONE);
-            container.findViewById(R.id.reply_captcha).setVisibility(View.GONE);
-        }
-
         cancelButton = (Button) container.findViewById(R.id.reply_cancel);
         cancelButton.setOnClickListener(new OnClickListener() {
             @Override

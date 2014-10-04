@@ -299,8 +299,9 @@ public class ChanReaderRequest extends JsonReaderRequest<List<Post>> {
                     // TODO: Cache the regex object.
                     Pattern regex = Pattern.compile("(\\d+)");
                     Matcher match = regex.matcher(reader.nextString());
-                    match.find();
-                    post.tim = Long.parseLong(match.group());
+                    if (match.find()) {
+                        post.tim = Long.parseLong(match.group());
+                    }
                     break;
                 case "time":
                     post.time = reader.nextLong();
@@ -317,6 +318,12 @@ public class ChanReaderRequest extends JsonReaderRequest<List<Post>> {
                 case "h":
                     post.imageHeight = reader.nextInt();
                     break;
+                case "tn_w":
+                    post.thumbWidth = reader.nextInt();
+                    break;
+                case "tn_h":
+                    post.thumbHeight = reader.nextInt();
+                    break;
                 case "fsize":
                     post.fileSize = reader.nextInt();
                     break;
@@ -327,7 +334,9 @@ public class ChanReaderRequest extends JsonReaderRequest<List<Post>> {
                     post.replies = reader.nextInt();
                     break;
                 case "filename":
-                    post.filename = reader.nextString();
+                    post.serverFilename = reader.nextString();
+                    // 8chan doesn't expose the original filename.
+                    post.originalFilename = post.serverFilename;
                     break;
                 case "sticky":
                     post.sticky = reader.nextInt() == 1;
@@ -354,6 +363,7 @@ public class ChanReaderRequest extends JsonReaderRequest<List<Post>> {
                     post.images = reader.nextInt();
                     break;
                 case "spoiler":
+                    // TODO: We never receive this... Bug the admins to add it to the API.
                     post.spoiler = reader.nextInt() == 1;
                     break;
                 default:

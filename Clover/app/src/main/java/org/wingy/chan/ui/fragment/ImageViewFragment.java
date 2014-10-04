@@ -176,7 +176,7 @@ public class ImageViewFragment extends Fragment implements ThumbnailImageViewCal
     public void onSelected(ImageViewAdapter adapter, int position) {
         activity.setProgressBarIndeterminateVisibility(showProgressBar);
 
-        String filename = post.filename + "." + post.ext;
+        String filename = post.originalFilename + "." + post.ext;
         activity.getActionBar().setTitle(filename);
 
         String text = (position + 1) + "/" + adapter.getCount();
@@ -242,7 +242,7 @@ public class ImageViewFragment extends Fragment implements ThumbnailImageViewCal
             case R.id.action_image_save:
             case R.id.action_share:
                 ImageSaver.getInstance().saveImage(context, post.imageUrl,
-                        ChanPreferences.getImageSaveOriginalFilename() ? Long.toString(post.tim) : post.filename, post.ext,
+                        ChanPreferences.getImageSaveOriginalFilename() ? Long.toString(post.tim) : post.originalFilename, post.ext,
                         item.getItemId() == R.id.action_share);
                 break;
             default:

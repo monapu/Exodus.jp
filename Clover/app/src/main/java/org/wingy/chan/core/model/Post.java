@@ -46,10 +46,13 @@ public class Post {
     public String subject = "";
     public long tim = -1;
     public String ext;
-    public String filename;
+    public String serverFilename;
+    public String originalFilename;
     public int replies = -1;
     public int imageWidth;
     public int imageHeight;
+    public int thumbWidth;
+    public int thumbHeight;
     public boolean hasImage = false;
     public String thumbnailUrl;
     public String imageUrl;
@@ -120,29 +123,23 @@ public class Post {
 
         isOP = resto == 0;
 
-        //if (isOP && (replies < 0 || images < 0))
-        //    return false;
-
-        if (ext != null) {
+        if (ext != null && !ext.equals("swf")) {
             hasImage = true;
         }
 
         if (hasImage) {
-            if (filename == null || ext == null || imageWidth <= 0 || imageHeight <= 0 || tim < 0)
+            if (serverFilename == null || originalFilename == null || ext == null || imageWidth <= 0 || imageHeight <= 0)
                 return false;
 
-            imageUrl = ChanUrls.getImageUrl(board, Long.toString(tim), ext, false);
-            filename = Parser.unescapeEntities(filename, false);
+            imageUrl = ChanUrls.getImageUrl(board, serverFilename, ext, false);
+            originalFilename = Parser.unescapeEntities(originalFilename, false);
 
             if (spoiler) {
-                Board b = ChanApplication.getBoardManager().getBoardByValue(board);
-                if (b != null && b.customSpoilers >= 0) {
-                    thumbnailUrl = ChanUrls.getCustomSpoilerUrl(board, random.nextInt(b.customSpoilers) + 1);
-                } else {
-                    thumbnailUrl = ChanUrls.getSpoilerUrl();
-                }
+                // TODO: Add custom spoiler support
+                thumbnailUrl = ChanUrls.getSpoilerUrl();
             } else {
-                thumbnailUrl = ChanUrls.getImageUrl(board, Long.toString(tim), ext, true);
+                String thumbExt = ext.equals("webm") ? "jpg" : ext;
+                thumbnailUrl = ChanUrls.getImageUrl(board, serverFilename, thumbExt, true);
             }
         }
 

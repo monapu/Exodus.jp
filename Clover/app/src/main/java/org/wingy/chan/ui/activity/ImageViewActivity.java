@@ -213,7 +213,7 @@ public class ImageViewActivity extends Activity implements ViewPager.OnPageChang
                 String name = "downloaded";
                 String filename;
                 for (Post post : adapter.getList()) {
-                    filename = (ChanPreferences.getImageSaveOriginalFilename() ? post.tim : post.filename) + "." + post.ext;
+                    filename = (ChanPreferences.getImageSaveOriginalFilename() ? post.tim : post.originalFilename) + "." + post.ext;
                     list.add(new ImageSaver.DownloadPair(post.imageUrl, filename));
 
                     name = post.board + "_" + post.resto;

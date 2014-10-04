@@ -39,38 +39,22 @@ public class ChanUrls {
         return scheme + "://8chan.co/" + board + "/res/" + no + ".json";
     }
 
-    // TODO: Review
-    public static String getCaptchaChallengeUrl() {
-        return scheme + "://www.google.com/recaptcha/api/challenge?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc";
-    }
-
-    // TODO: Review
-    public static String getCaptchaImageUrl(String challenge) {
-        return scheme + "://www.google.com/recaptcha/api/image?c=" + challenge;
-    }
-
     public static String getImageUrl(String board, String code, String extension, boolean thumb) {
         return scheme + "://8chan.co/" + board + (thumb ? "/thumb/" : "/src/") + code + "." + extension;
     }
 
-    // TODO: Review
     public static String getSpoilerUrl() {
-        return scheme + "://s.4cdn.org/image/spoiler.png";
+        return scheme + "://8chan.co/static/spoiler.png";
     }
 
-    // TODO: Review
-    public static String getCustomSpoilerUrl(String board, int value) {
-        return scheme + "://s.4cdn.org/image/spoiler-" + board + value + ".png";
-    }
-
-    // TODO: Review
+    // TODO: Use https://8chan.co/static/flags/flags.png instead. Somehow...
     public static String getCountryFlagUrl(String countryCode) {
         return scheme + "://s.4cdn.org/image/country/" + countryCode.toLowerCase(Locale.ENGLISH) + ".gif";
     }
 
-    // TODO: Review
+    // TODO: Remove if unused
     public static String getTrollCountryFlagUrl(String countryCode) {
-        return scheme + "://s.4cdn.org/image/country/troll/" + countryCode.toLowerCase(Locale.ENGLISH) + ".gif";
+        return getCountryFlagUrl(countryCode);
     }
 
     public static String getBoardsUrl() {

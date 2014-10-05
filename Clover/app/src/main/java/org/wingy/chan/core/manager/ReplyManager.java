@@ -22,9 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.wingy.chan.ChanApplication;
-import org.wingy.chan.R;
 import org.wingy.chan.chan.ChanUrls;
-import org.wingy.chan.core.model.Pass;
 import org.wingy.chan.core.model.Reply;
 import org.wingy.chan.core.model.SavedReply;
 import org.wingy.chan.ui.activity.ImagePickActivity;
@@ -33,19 +31,19 @@ import org.wingy.chan.utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Locale;
+import java.net.URI;
+import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ch.boye.httpclientandroidlib.Consts;
-import ch.boye.httpclientandroidlib.Header;
-import ch.boye.httpclientandroidlib.HeaderElement;
 import ch.boye.httpclientandroidlib.HttpResponse;
 import ch.boye.httpclientandroidlib.client.HttpClient;
 import ch.boye.httpclientandroidlib.client.config.RequestConfig;
 import ch.boye.httpclientandroidlib.client.methods.CloseableHttpResponse;
 import ch.boye.httpclientandroidlib.client.methods.HttpPost;
+import ch.boye.httpclientandroidlib.client.protocol.HttpClientContext;
 import ch.boye.httpclientandroidlib.entity.ContentType;
 import ch.boye.httpclientandroidlib.entity.mime.MultipartEntityBuilder;
 import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
@@ -58,8 +56,8 @@ import ch.boye.httpclientandroidlib.util.EntityUtils;
 public class ReplyManager {
     private static final String TAG = "ReplyManager";
 
-    private static final Pattern challengePattern = Pattern.compile("challenge.?:.?'([\\w-]+)'");
-    private static final Pattern responsePattern = Pattern.compile("<!-- thread:([0-9]+),no:([0-9]+) -->");
+    private static final Pattern postURIPattern = Pattern.compile("/(\\d+)\\.html#(\\d+)$");
+    private static final Pattern threadURIPattern = Pattern.compile("/(\\d+)\\.html$");
     private static final int POST_TIMEOUT = 10000;
 
     private static final ContentType TEXT_UTF_8 = ContentType.create(
@@ -204,7 +202,7 @@ public class ReplyManager {
 
         sendHttpPost(httpPost, new HttpPostSendListener() {
             @Override
-            public void onResponse(String responseString, HttpClient client, HttpResponse response) {
+            public void onResponse(String responseString, HttpClient client, HttpResponse response, String lastURI) {
                 DeleteResponse e = new DeleteResponse();
 
                 if (responseString == null) {
@@ -259,15 +257,14 @@ public class ReplyManager {
 
         MultipartEntityBuilder entity = MultipartEntityBuilder.create();
 
-        reply.password = Long.toHexString(random.nextLong());
+
 
         entity.addTextBody("name", reply.name, TEXT_UTF_8);
         entity.addTextBody("email", reply.email, TEXT_UTF_8);
-
         entity.addTextBody("subject", reply.subject, TEXT_UTF_8);
         entity.addTextBody("body", reply.comment, TEXT_UTF_8);
-
         entity.addTextBody("post", reply.resto == 0 ? "New Topic" : "New Reply");
+        entity.addTextBody("board", reply.board);
 
         if (reply.resto >= 0) {
             entity.addTextBody("thread", Integer.toString(reply.resto));
@@ -277,12 +274,13 @@ public class ReplyManager {
             entity.addTextBody("spoiler", "on");
         }
 
+        reply.password = Long.toHexString(random.nextLong());
         entity.addTextBody("password", reply.password);
 
         // TODO: Review property
-        if (reply.usePass) {
+        /*if (reply.usePass) {
             httpPost.addHeader("Cookie", "pass_id=" + reply.passId);
-        }
+        }*/
 
         if (reply.file != null) {
             entity.addBinaryBody("file", reply.file, ContentType.APPLICATION_OCTET_STREAM, reply.fileName);
@@ -292,35 +290,39 @@ public class ReplyManager {
 
         sendHttpPost(httpPost, new HttpPostSendListener() {
             @Override
-            public void onResponse(String responseString, HttpClient client, HttpResponse response) {
+            public void onResponse(String responseString, HttpClient client, HttpResponse response, String lastURI) {
                 ReplyResponse e = new ReplyResponse();
+
+                int status = response.getStatusLine().getStatusCode();
 
                 if (responseString == null) {
                     e.isNetworkError = true;
                 } else {
                     e.responseData = responseString;
-
-                    if (responseString.contains("No file selected")) {
-                        e.isUserError = true;
-                        e.isFileError = true;
-                    } else if (responseString.contains("You forgot to solve the CAPTCHA")
-                            || responseString.contains("You seem to have mistyped the CAPTCHA")) {
-                        e.isUserError = true;
-                        e.isCaptchaError = true;
-                    } else if (responseString.toLowerCase(Locale.ENGLISH).contains("post successful")) {
+                    if (status == 200) {
                         e.isSuccessful = true;
+                    } else {
+                        e.isUserError = true;
                     }
                 }
 
                 if (e.isSuccessful) {
-                    Matcher matcher = responsePattern.matcher(e.responseData);
+                    Matcher postMatcher = postURIPattern.matcher(lastURI);
+                    Matcher threadMatcher = threadURIPattern.matcher(lastURI);
 
                     int threadNo = -1;
                     int no = -1;
-                    if (matcher.find()) {
+                    if (postMatcher.find()) {
                         try {
-                            threadNo = Integer.parseInt(matcher.group(1));
-                            no = Integer.parseInt(matcher.group(2));
+                            threadNo = Integer.parseInt(postMatcher.group(1));
+                            no = Integer.parseInt(postMatcher.group(2));
+                        } catch (NumberFormatException err) {
+                            err.printStackTrace();
+                        }
+                    } else if (threadMatcher.find()) {
+                        try {
+                            threadNo = Integer.parseInt(threadMatcher.group(1));
+                            no = threadNo;
                         } catch (NumberFormatException err) {
                             err.printStackTrace();
                         }
@@ -413,12 +415,15 @@ public class ReplyManager {
                 httpBuilder.setDefaultRequestConfig(requestBuilder.build());
                 final CloseableHttpClient client = httpBuilder.build();
                 try {
-                    final CloseableHttpResponse response = client.execute(post);
+                    final HttpClientContext httpClientContext = new HttpClientContext();
+                    final CloseableHttpResponse response = client.execute(post, httpClientContext);
+                    List<URI> allURIs = httpClientContext.getRedirectLocations();
+                    final String lastURI = allURIs.get(allURIs.size() - 1).toASCIIString();
                     final String responseString = EntityUtils.toString(response.getEntity(), "UTF-8");
                     Utils.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            listener.onResponse(responseString, client, response);
+                            listener.onResponse(responseString, client, response, lastURI);
                         }
                     });
                 } catch (IOException e) {
@@ -426,7 +431,7 @@ public class ReplyManager {
                     Utils.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            listener.onResponse(null, client, null);
+                            listener.onResponse(null, client, null, null);
                         }
                     });
                 } finally {
@@ -441,6 +446,6 @@ public class ReplyManager {
     }
 
     private static interface HttpPostSendListener {
-        public void onResponse(String responseString, HttpClient client, HttpResponse response);
+        public void onResponse(String responseString, HttpClient client, HttpResponse response, String lastURI);
     }
 }

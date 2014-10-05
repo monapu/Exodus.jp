@@ -72,9 +72,6 @@ public class ReplyFragment extends DialogFragment {
     private final Reply draft = new Reply();
     private boolean shouldSaveDraft = true;
 
-    private boolean gettingCaptcha = false;
-    private String captchaChallenge = "";
-
     private int defaultTextColor;
     private int maxCommentCount;
 

@@ -341,7 +341,7 @@ public class ChanReaderRequest extends JsonReaderRequest<List<Post>> {
                 case "sticky":
                     post.sticky = reader.nextInt() == 1;
                     break;
-                case "closed":
+                case "locked":
                     post.closed = reader.nextInt() == 1;
                     break;
                 case "trip":

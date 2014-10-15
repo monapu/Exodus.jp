@@ -54,11 +54,11 @@ public class Board {
     @DatabaseField
     public boolean workSafe = false;
     @DatabaseField
-    public int maxFileSize = -1;
+    public int maxFileSize = 8000000; // 8 MB
     @DatabaseField
-    public int maxWebmSize = -1;
+    public int maxWebmSize = 8000000; // 8 MB
     @DatabaseField
-    public int maxCommentChars = -1;
+    public int maxCommentChars = 5000;
     @DatabaseField
     public boolean spoilers = false;
     @DatabaseField

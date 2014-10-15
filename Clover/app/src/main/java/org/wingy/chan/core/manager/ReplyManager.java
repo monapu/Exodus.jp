@@ -181,22 +181,17 @@ public class ReplyManager {
     public void sendDelete(final SavedReply reply, boolean onlyImageDelete, final DeleteListener listener) {
         Logger.i(TAG, "Sending delete request: " + reply.board + ", " + reply.no);
 
-        HttpPost httpPost = new HttpPost(ChanUrls.getDeleteUrl(reply.board));
-
+        HttpPost httpPost = new HttpPost(ChanUrls.getDeleteUrl());
         MultipartEntityBuilder entity = MultipartEntityBuilder.create();
-
-
-        entity.addTextBody(Integer.toString(reply.no), "delete");
+        entity.addTextBody("delete", "Delete");
+        entity.addTextBody("delete_" + reply.no, "");
+        entity.addTextBody("reason", "");
+        entity.addTextBody("board", reply.board);
+        entity.addTextBody("password", reply.password);
 
         if (onlyImageDelete) {
-            entity.addTextBody("onlyimgdel", "on");
+            entity.addTextBody("file", "on");
         }
-
-        // res not necessary
-
-        entity.addTextBody("mode", "usrdel");
-        entity.addTextBody("pwd", reply.password);
-
 
         httpPost.setEntity(entity.build());
 
@@ -208,20 +203,9 @@ public class ReplyManager {
                 if (responseString == null) {
                     e.isNetworkError = true;
                 } else {
+                    // TODO: We can't error check here. API returns 200 with no status indication in body.
                     e.responseData = responseString;
-
-                    if (responseString.contains("You must wait longer before deleting this post")) {
-                        e.isUserError = true;
-                        e.isTooSoonError = true;
-                    } else if (responseString.contains("Password incorrect")) {
-                        e.isUserError = true;
-                        e.isInvalidPassword = true;
-                    } else if (responseString.contains("You cannot delete a post this old")) {
-                        e.isUserError = true;
-                        e.isTooOldError = true;
-                    } else if (responseString.contains("Updating index")) {
-                        e.isSuccessful = true;
-                    }
+                    e.isSuccessful = true;
                 }
 
                 listener.onResponse(e);

@@ -8,8 +8,8 @@ android {
         minSdkVersion 14
         targetSdkVersion 19
 
-        versionName "v1.2.0"
-        versionCode 37
+        versionName "v1.2.0-jp2"
+        versionCode 38
     }
 
     compileOptions {
@@ -70,7 +70,7 @@ dependencies {
     compile 'org.jsoup:jsoup:1.7.3'
     compile 'com.j256.ormlite:ormlite-core:4.48'
     compile 'com.j256.ormlite:ormlite-android:4.48'
-    compile 'com.android.support:support-v13:18.0.+'
+    compile 'com.android.support:support-v13:19.1.+'
     compile 'com.koushikdutta.ion:ion:1.+'
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.0.+'
 

@@ -139,7 +139,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         android:text="@string/reply_spoiler_image"
         android:textSize="14sp" />
 
-    <org.wingy.chan.ui.view.LoadView
+    <org.wingy.jp8chan.ui.view.LoadView
         android:id="@+id/reply_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

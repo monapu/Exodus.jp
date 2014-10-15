@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
-    <org.wingy.chan.ui.view.DragGripView
+    <org.wingy.jp8chan.ui.view.DragGripView
         android:id="@+id/drag_handle"
         android:layout_width="64dp"
         android:layout_height="match_parent"

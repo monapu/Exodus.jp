@@ -22,16 +22,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         android:title="@string/preference_board_edit">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetClass="org.wingy.chan.ui.activity.BoardEditor"
-            android:targetPackage="org.wingy.chan" />
+            android:targetClass="org.wingy.jp8chan.ui.activity.BoardEditor"
+            android:targetPackage="org.wingy.jp8chan" />
     </Preference>
     <Preference
         android:key="watch_settings"
         android:title="@string/preference_watch_settings">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetClass="org.wingy.chan.ui.activity.WatchSettingsActivity"
-            android:targetPackage="org.wingy.chan" />
+            android:targetClass="org.wingy.jp8chan.ui.activity.WatchSettingsActivity"
+            android:targetPackage="org.wingy.jp8chan" />
     </Preference>
 
     <PreferenceCategory android:title="@string/preference_browsing">
@@ -108,8 +108,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             android:title="@string/preference_developer">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:targetClass="org.wingy.chan.ui.activity.DeveloperActivity"
-                android:targetPackage="org.wingy.chan" />
+                android:targetClass="org.wingy.jp8chan.ui.activity.DeveloperActivity"
+                android:targetPackage="org.wingy.jp8chan" />
         </Preference>
     </PreferenceCategory>
 

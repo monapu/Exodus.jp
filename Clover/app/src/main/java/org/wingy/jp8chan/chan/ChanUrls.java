@@ -65,9 +65,9 @@ public class ChanUrls {
         return "https://jp.8chan.co/post.php";
     }
 
-    // TODO: Review
+    // TODO: Implement
     public static String getDeleteUrl(String board) {
-        return "https://sys.4chan.org/" + board + "/imgboard.php";
+        return ""; //return "https://sys.4chan.org/" + board + "/imgboard.php";
     }
 
     public static String getBoardUrlDesktop(String board) {
@@ -82,13 +82,8 @@ public class ChanUrls {
         return scheme + "://jp.8chan.co/" + board + "/catalog.html";
     }
 
-    // TODO: Review
-    public static String getPassUrl() {
-        return "https://sys.4chan.org/auth";
-    }
-
-    // TODO: Review
+    // TODO: Implement
     public static String getReportUrl(String board, int no) {
-        return "https://sys.4chan.org/" + board + "/imgboard.php?mode=report&no=" + no;
+        return ""; //return "https://sys.4chan.org/" + board + "/imgboard.php?mode=report&no=" + no;
     }
 }

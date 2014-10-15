@@ -299,9 +299,12 @@ public class ThreadManager implements Loader.LoaderListener {
     }
 
     public void openReply(boolean startInActivity) {
-        if (loader == null)
+        if (loader == null || loader.isLoading())
             return;
-
+        if (loader.getOP() != null && loader.getOP().closed) {
+            Toast.makeText(activity, R.string.reply_locked_thread, Toast.LENGTH_SHORT).show();
+            return;
+        }
         if (startInActivity) {
             ReplyActivity.setLoadable(loader.getLoadable());
             Intent i = new Intent(activity, ReplyActivity.class);

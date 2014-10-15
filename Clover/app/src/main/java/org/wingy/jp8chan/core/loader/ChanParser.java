@@ -197,106 +197,102 @@ public class ChanParser {
             detectLinks(post, text, spannable);
 
             return spannable;
-        } else {
-            switch (node.nodeName()) {
-                case "br": {
-                    return "\n";
+        }
+
+        switch (node.nodeName()) {
+            case "br": {
+                return "\n";
+            }
+            case "span": {
+                Element span = (Element) node;
+
+                SpannableString spannable = new SpannableString(span.text());
+
+                if (span.classNames().size() != 1) {
+                    spannable.setSpan(new ForegroundColorSpan(ThemeHelper.getInstance().getInlineQuoteColor()), 0, spannable.length(), 0);
+                    detectLinks(post, span.text(), spannable);
+                    return spannable;
                 }
-                case "span": {
-                    Element span = (Element) node;
 
-                    SpannableString quote = null;
-
-                    Set<String> classes = span.classNames();
-                    if (classes.contains("deadlink")) {
-                        quote = new SpannableString(span.text());
-                        quote.setSpan(new ForegroundColorSpan(ThemeHelper.getInstance().getQuoteColor()), 0, quote.length(), 0);
-                        quote.setSpan(new StrikethroughSpan(), 0, quote.length(), 0);
-                    } else if (classes.contains("fortune")) {
-                        // html looks like <span class="fortune" style="color:#0893e1"><br><br><b>Your fortune:</b>
-                        // manually add these <br>
-                        quote = new SpannableString("\n\n" + span.text());
-
-                        String style = span.attr("style");
-                        if (!TextUtils.isEmpty(style)) {
-                            style = style.replace(" ", "");
-
-                            // private static final Pattern colorPattern = Pattern.compile("color:#([0-9a-fA-F]*)");
-                            Matcher matcher = colorPattern.matcher(style);
-
-                            int hexColor = 0xff0000;
-                            if (matcher.find()) {
-                                String group = matcher.group(1);
-                                if (!TextUtils.isEmpty(group)) {
-                                    try {
-                                        hexColor = Integer.parseInt(group, 16);
-                                    } catch (NumberFormatException e) {
-                                    }
-                                }
-                            }
-
-                            if (hexColor >= 0 && hexColor <= 0xffffff) {
-                                quote.setSpan(new ForegroundColorSpan(0xff000000 + hexColor), 0, quote.length(), 0);
-                                quote.setSpan(new StyleSpan(Typeface.BOLD), 0, quote.length(), 0);
-                            }
-                        }
-                    } else {
-                        quote = new SpannableString(span.text());
-                        quote.setSpan(new ForegroundColorSpan(ThemeHelper.getInstance().getInlineQuoteColor()), 0, quote.length(), 0);
-                        detectLinks(post, span.text(), quote);
+                String spanClass = span.classNames().iterator().next();
+                switch (spanClass) {
+                    case "quote": {
+                        spannable.setSpan(new ForegroundColorSpan(ThemeHelper.getInstance().getInlineQuoteColor()), 0, spannable.length(), 0);
+                        detectLinks(post, span.text(), spannable);
+                        break;
                     }
-
-                    return quote;
-                }
-                case "strong": {
-                    Element strong = (Element) node;
-
-                    SpannableString red = new SpannableString(strong.text());
-                    red.setSpan(new ForegroundColorSpan(ThemeHelper.getInstance().getQuoteColor()), 0, red.length(), 0);
-                    red.setSpan(new StyleSpan(Typeface.BOLD), 0, red.length(), 0);
-
-                    return red;
-                }
-                case "a": {
-                    CharSequence anchor = parseAnchor(post, (Element) node);
-                    if (anchor != null) {
-                        return anchor;
-                    } else {
-                        return ((Element) node).text();
+                    case "heading": {
+                        spannable.setSpan(new ForegroundColorSpan(ThemeHelper.getInstance().getQuoteColor()), 0, spannable.length(), 0);
+                        spannable.setSpan(new StyleSpan(Typeface.BOLD), 0, spannable.length(), 0);
+                        break;
+                    }
+                    case "spoiler": {
+                        PostLinkable pl = new PostLinkable(post, span.text(), span.text(), PostLinkable.Type.SPOILER);
+                        spannable.setSpan(pl, 0, spannable.length(), 0);
+                        post.linkables.add(pl);
+                        break;
+                    }
+                    case "deadlink": {
+                        spannable.setSpan(new ForegroundColorSpan(ThemeHelper.getInstance().getQuoteColor()), 0, spannable.length(), 0);
+                        spannable.setSpan(new StrikethroughSpan(), 0, spannable.length(), 0);
+                        break;
                     }
                 }
-                case "s": {
-                    Element spoiler = (Element) node;
 
-                    SpannableString link = new SpannableString(spoiler.text());
+                return spannable;
+            }
+            case "strong": {
+                Element strong = (Element) node;
 
-                    PostLinkable pl = new PostLinkable(post, spoiler.text(), spoiler.text(), PostLinkable.Type.SPOILER);
-                    link.setSpan(pl, 0, link.length(), 0);
-                    post.linkables.add(pl);
+                SpannableString bold = new SpannableString(strong.text());
+                bold.setSpan(new StyleSpan(Typeface.BOLD), 0, bold.length(), 0);
 
-                    return link;
+                return bold;
+            }
+            case "a": {
+                CharSequence anchor = parseAnchor(post, (Element) node);
+                if (anchor != null) {
+                    return anchor;
+                } else {
+                    return ((Element) node).text();
                 }
-                case "pre": {
-                    Element pre = (Element) node;
+            }
+            case "s": {
+                Element em = (Element) node;
 
-                    Set<String> classes = pre.classNames();
-                    if (classes.contains("prettyprint")) {
-                        String text = getNodeText(pre);
-                        SpannableString monospace = new SpannableString(text);
-                        monospace.setSpan(new TypefaceSpan("monospace"), 0, monospace.length(), 0);
-                        monospace.setSpan(new AbsoluteSizeSpan(ThemeHelper.getInstance().getCodeTagSize()), 0, monospace.length(), 0);
-                        return monospace;
-                    } else {
-                        return pre.text();
-                    }
+                SpannableString strikethrough = new SpannableString(em.text());
+                strikethrough.setSpan(new StrikethroughSpan(), 0, strikethrough.length(), 0);
+
+                return strikethrough;
+            }
+            case "pre": {
+                Element pre = (Element) node;
+
+                Set<String> classes = pre.classNames();
+                if (classes.contains("prettyprint")) {
+                    String text = getNodeText(pre);
+                    SpannableString monospace = new SpannableString(text);
+                    monospace.setSpan(new TypefaceSpan("monospace"), 0, monospace.length(), 0);
+                    monospace.setSpan(new AbsoluteSizeSpan(ThemeHelper.getInstance().getCodeTagSize()), 0, monospace.length(), 0);
+                    return monospace;
+                } else {
+                    return pre.text();
                 }
-                default: {
-                    // Unknown tag, add the inner part
-                    if (node instanceof Element) {
-                        return ((Element) node).text();
-                    } else {
-                        return null;
-                    }
+            }
+            case "em": {
+                Element em = (Element) node;
+
+                SpannableString italic = new SpannableString(em.text());
+                italic.setSpan(new StyleSpan(Typeface.ITALIC), 0, italic.length(), 0);
+
+                return italic;
+            }
+            default: {
+                // Unknown tag, add the inner part
+                if (node instanceof Element) {
+                    return ((Element) node).text();
+                } else {
+                    return null;
                 }
             }
         }

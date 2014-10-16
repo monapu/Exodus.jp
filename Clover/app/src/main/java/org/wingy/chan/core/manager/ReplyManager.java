@@ -277,17 +277,19 @@ public class ReplyManager {
             public void onResponse(String responseString, HttpClient client, HttpResponse response, String lastURI) {
                 ReplyResponse e = new ReplyResponse();
 
-                int status = response.getStatusLine().getStatusCode();
-
                 if (responseString == null) {
                     e.isNetworkError = true;
+                    listener.onResponse(e);
+                    return;
+                }
+
+                int status = response.getStatusLine().getStatusCode();
+
+                e.responseData = responseString;
+                if (status == 200) {
+                    e.isSuccessful = true;
                 } else {
-                    e.responseData = responseString;
-                    if (status == 200) {
-                        e.isSuccessful = true;
-                    } else {
-                        e.isUserError = true;
-                    }
+                    e.isUserError = true;
                 }
 
                 if (e.isSuccessful) {
@@ -402,12 +404,15 @@ public class ReplyManager {
                     final HttpClientContext httpClientContext = new HttpClientContext();
                     final CloseableHttpResponse response = client.execute(post, httpClientContext);
                     List<URI> allURIs = httpClientContext.getRedirectLocations();
-                    final String lastURI = allURIs.get(allURIs.size() - 1).toASCIIString();
+                    final String lastURI = allURIs == null ? null : allURIs.get(allURIs.size() - 1).toASCIIString();
                     final String responseString = EntityUtils.toString(response.getEntity(), "UTF-8");
                     Utils.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            listener.onResponse(responseString, client, response, lastURI);
+                            if (lastURI != null)
+                                listener.onResponse(responseString, client, response, lastURI);
+                            else
+                                listener.onResponse(null, client, null, null);
                         }
                     });
                 } catch (IOException e) {

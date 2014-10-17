@@ -60,9 +60,11 @@ import org.wingy.chan.utils.ThemeHelper;
 import org.wingy.chan.utils.Utils;
 
 import java.io.File;
+import java.util.Arrays;
 
 public class ReplyFragment extends DialogFragment {
     private static final String TAG = "ReplyFragment";
+    private static final String[] FILE_EXTS = {"jpg", "jpeg", "png", "gif", "bmp", "webm"};
 
     private int page = 0;
 
@@ -411,19 +413,22 @@ public class ReplyFragment extends DialogFragment {
                                 if (context == null)
                                     return;
 
-                                final Bitmap bitmap = ImageDecoder.decodeFile(file, imageViewContainer.getWidth(), imageViewContainer.getWidth());
+                                final ImageDecoder.TypedBitmap typedBitmap = ImageDecoder.decodeFile(file, imageViewContainer.getWidth(), imageViewContainer.getWidth());
 
                                 context.runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         if (context != null) {
-                                            if (bitmap != null) {
+                                            if (typedBitmap != null && typedBitmap.bitmap != null) {
                                                 ImageView imageView = new ImageView(context);
                                                 imageViewContainer.setView(imageView);
                                                 imageView.setAdjustViewBounds(true);
                                                 imageView.setMaxWidth(imageViewContainer.getWidth());
                                                 imageView.setMaxHeight(imageViewContainer.getWidth());
-                                                imageView.setImageBitmap(bitmap);
+                                                imageView.setImageBitmap(typedBitmap.bitmap);
+                                                String[] components = draft.fileName.split(".");
+                                                if (components.length == 0 || !Arrays.asList(FILE_EXTS).contains(components[components.length - 1].toLowerCase()))
+                                                    fileNameView.append("." + typedBitmap.extension);
                                             } else {
                                                 noPreview(imageViewContainer);
                                             }

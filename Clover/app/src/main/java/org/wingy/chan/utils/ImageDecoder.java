@@ -1,6 +1,7 @@
 /*
  * Clover - 4chan browser https://github.com/Floens/Clover/
  * Copyright (C) 2014  Floens
+ * Copyright (C) 2014  wingy
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +20,7 @@ package org.wingy.chan.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.webkit.MimeTypeMap;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -30,7 +32,17 @@ import java.io.IOException;
  * Simple ImageDecoder with no threads. Taken from Volley ImageRequest.
  */
 public class ImageDecoder {
-    public static Bitmap decodeFile(File file, int maxWidth, int maxHeight) {
+    public static class TypedBitmap {
+        public final Bitmap bitmap;
+        public final String extension;
+
+        TypedBitmap(Bitmap bitmap, String extension) {
+            this.bitmap = bitmap;
+            this.extension = extension;
+        }
+    }
+
+    public static TypedBitmap decodeFile(File file, int maxWidth, int maxHeight) {
         if (!file.exists())
             return null;
 
@@ -45,7 +57,7 @@ public class ImageDecoder {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        Bitmap bitmap = null;
+        TypedBitmap bitmap = null;
 
         try {
             IOUtils.copy(fis, baos);
@@ -65,7 +77,7 @@ public class ImageDecoder {
         return bitmap;
     }
 
-    public static Bitmap decode(byte[] data, int maxWidth, int maxHeight) {
+    public static TypedBitmap decode(byte[] data, int maxWidth, int maxHeight) {
         BitmapFactory.Options decodeOptions = new BitmapFactory.Options();
         Bitmap bitmap;
 
@@ -93,8 +105,8 @@ public class ImageDecoder {
         } else {
             bitmap = tempBitmap;
         }
-
-        return bitmap;
+        String extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(decodeOptions.outMimeType);
+        return new TypedBitmap(bitmap, extension);
     }
 
     private static int getResizedDimension(int maxPrimary, int maxSecondary, int actualPrimary, int actualSecondary) {

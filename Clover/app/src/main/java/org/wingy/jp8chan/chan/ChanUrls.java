@@ -62,7 +62,8 @@ public class ChanUrls {
     }
 
     public static String getReplyUrl() {
-        return "https://jp.8chan.co/post.php";
+        //return "https://jp.8chan.co/post.php";
+        return scheme + "://jp.8chan.co/post.php";
     }
 
     // TODO: Implement

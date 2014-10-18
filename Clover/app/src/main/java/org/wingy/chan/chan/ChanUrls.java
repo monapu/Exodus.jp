@@ -47,9 +47,8 @@ public class ChanUrls {
         return scheme + "://8chan.co/static/spoiler.png";
     }
 
-    // TODO: Use https://8chan.co/static/flags/flags.png instead. Somehow...
     public static String getCountryFlagUrl(String countryCode) {
-        return scheme + "://s.4cdn.org/image/country/" + countryCode.toLowerCase(Locale.ENGLISH) + ".gif";
+        return scheme + "://8chan.co/static/flags/" + countryCode.toLowerCase(Locale.ENGLISH) + ".png";
     }
 
     // TODO: Remove if unused

@@ -57,9 +57,10 @@ public class ChanUrls {
         return getCountryFlagUrl(countryCode);
     }
 
+    /* TODO: Implement 8chan board manager
     public static String getBoardsUrl() {
         return scheme + "://8chan.co/boards.json";
-    }
+    }*/
 
     public static String getReplyUrl() {
         return "https://8chan.co/post.php";

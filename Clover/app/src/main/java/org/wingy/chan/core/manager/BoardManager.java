@@ -50,32 +50,42 @@ public class BoardManager {
 
     public BoardManager() {
         loadBoards();
-        loadFromServer();
     }
 
     public Board getBoardByValue(String value) {
         return allBoardsByValue.get(value);
     }
 
-    public List<Board> getAllBoards() {
-        return allBoards;
-    }
-
     public List<Board> getSavedBoards() {
         List<Board> saved = new ArrayList<>(allBoards.size());
 
-        for (Board b : allBoards) {
-            if (b.saved)
-                saved.add(b);
-        }
+        for (Board b : allBoards)
+            saved.add(b);
 
         Collections.sort(saved, savedOrder);
 
         return saved;
     }
 
+    public void saveBoard(Board board) {
+        allBoards.add(board);
+        storeBoards();
+    }
+
+    public void removeBoard(String board) {
+        for (Board b : allBoards) {
+            if (b.key == board) {
+                allBoards.remove(b);
+                ChanApplication.getDatabaseManager().removeBoard(b);
+                updateByValueMap();
+                notifyChanged();
+                return;
+            }
+        }
+    }
+
     public boolean getBoardExists(String board) {
-        for (Board e : getAllBoards()) {
+        for (Board e : getSavedBoards()) {
             if (e.value.equals(board)) {
                 return true;
             }
@@ -114,11 +124,6 @@ public class BoardManager {
     private void storeBoards() {
         Logger.d(TAG, "Storing boards in database");
 
-        for (Board test : allBoards) {
-            if (test.saved) {
-                Logger.d(TAG, "Board with value " + test.value + " saved");
-            }
-        }
         updateByValueMap();
 
         ChanApplication.getDatabaseManager().setBoards(allBoards);
@@ -135,66 +140,17 @@ public class BoardManager {
         updateByValueMap();
     }
 
-    private void setBoardsFromServer(List<Board> serverList) {
-        for (Board serverBoard : serverList) {
-            boolean has = false;
-            for (int j = 0; j < allBoards.size(); j++) {
-                if (allBoards.get(j).value.equals(serverBoard.value)) {
-                    Logger.d(TAG, "Replaced board " + serverBoard.value + " with the server one");
-
-                    Board old = allBoards.get(j);
-                    serverBoard.id = old.id;
-                    serverBoard.saved = old.saved;
-                    serverBoard.order = old.order;
-                    allBoards.set(j, serverBoard);
-
-                    has = true;
-                    break;
-                }
-            }
-
-            if (!has) {
-                Logger.d(TAG, "Adding unknown board: " + serverBoard.value);
-
-                if (serverBoard.workSafe) {
-                    serverBoard.saved = true;
-                }
-
-                allBoards.add(serverBoard);
-            }
-        }
-
-        storeBoards();
-    }
-
-    private void loadFromServer() {
-        ChanApplication.getVolleyRequestQueue().add(
-                new BoardsRequest(ChanUrls.getBoardsUrl(), new Response.Listener<List<Board>>() {
-                    @Override
-                    public void onResponse(List<Board> data) {
-                        Logger.i(TAG, "Got boards from server");
-                        setBoardsFromServer(data);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Logger.e(TAG, "Failed to get boards from server");
-                    }
-                })
-        );
-    }
-
     private List<Board> getDefaultBoards() {
         List<Board> list = new ArrayList<>();
-        list.add(new Board("Vidya Games", "v", true, true));
-        list.add(new Board("Anime & Manga", "a", true, true));
-        list.add(new Board("Traditional Games", "tg", true, true));
-        list.add(new Board("Fitness", "fit", true, true));
-        list.add(new Board("Politically Incorrect", "pol", true, true));
-        list.add(new Board("Technology", "tech", true, true));
-        list.add(new Board("Music", "mu", true, true));
-        list.add(new Board("Comics & Cartoons", "co", true, true));
-        list.add(new Board("Sports", "sp", true, true));
+        list.add(new Board("Vidya Games", "v", true));
+        list.add(new Board("Anime & Manga", "a", true));
+        list.add(new Board("Traditional Games", "tg", true));
+        list.add(new Board("Fitness", "fit", true));
+        list.add(new Board("Politically Incorrect", "pol", true));
+        list.add(new Board("Technology", "tech", true));
+        list.add(new Board("Music", "mu", true));
+        list.add(new Board("Comics & Cartoons", "co", true));
+        list.add(new Board("Sports", "sp", true));
         return list;
     }
 

@@ -350,7 +350,7 @@ public class ThreadManager implements Loader.LoaderListener {
                     + post.imageHeight + "\nSize: " + Utils.getReadableFileSize(post.fileSize, false) + "\n\n";
         }
 
-        text += "Time: " + post.tim; // TODO: Humanize the time
+        text += "Time: " + post.time; // TODO: Humanize the time
 
         if (!TextUtils.isEmpty(post.id)) {
             text += "\nId: " + post.id;

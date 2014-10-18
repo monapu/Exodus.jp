@@ -181,22 +181,17 @@ public class ReplyManager {
     public void sendDelete(final SavedReply reply, boolean onlyImageDelete, final DeleteListener listener) {
         Logger.i(TAG, "Sending delete request: " + reply.board + ", " + reply.no);
 
-        HttpPost httpPost = new HttpPost(ChanUrls.getDeleteUrl(reply.board));
-
+        HttpPost httpPost = new HttpPost(ChanUrls.getDeleteUrl());
         MultipartEntityBuilder entity = MultipartEntityBuilder.create();
-
-
-        entity.addTextBody(Integer.toString(reply.no), "delete");
+        entity.addTextBody("delete", "Delete");
+        entity.addTextBody("delete_" + reply.no, "");
+        entity.addTextBody("reason", "");
+        entity.addTextBody("board", reply.board);
+        entity.addTextBody("password", reply.password);
 
         if (onlyImageDelete) {
-            entity.addTextBody("onlyimgdel", "on");
+            entity.addTextBody("file", "on");
         }
-
-        // res not necessary
-
-        entity.addTextBody("mode", "usrdel");
-        entity.addTextBody("pwd", reply.password);
-
 
         httpPost.setEntity(entity.build());
 
@@ -208,20 +203,9 @@ public class ReplyManager {
                 if (responseString == null) {
                     e.isNetworkError = true;
                 } else {
+                    // TODO: We can't error check here. API returns 200 with no status indication in body.
                     e.responseData = responseString;
-
-                    if (responseString.contains("You must wait longer before deleting this post")) {
-                        e.isUserError = true;
-                        e.isTooSoonError = true;
-                    } else if (responseString.contains("Password incorrect")) {
-                        e.isUserError = true;
-                        e.isInvalidPassword = true;
-                    } else if (responseString.contains("You cannot delete a post this old")) {
-                        e.isUserError = true;
-                        e.isTooOldError = true;
-                    } else if (responseString.contains("Updating index")) {
-                        e.isSuccessful = true;
-                    }
+                    e.isSuccessful = true;
                 }
 
                 listener.onResponse(e);
@@ -293,17 +277,19 @@ public class ReplyManager {
             public void onResponse(String responseString, HttpClient client, HttpResponse response, String lastURI) {
                 ReplyResponse e = new ReplyResponse();
 
-                int status = response.getStatusLine().getStatusCode();
-
                 if (responseString == null) {
                     e.isNetworkError = true;
+                    listener.onResponse(e);
+                    return;
+                }
+
+                int status = response.getStatusLine().getStatusCode();
+
+                e.responseData = responseString;
+                if (status == 200) {
+                    e.isSuccessful = true;
                 } else {
-                    e.responseData = responseString;
-                    if (status == 200) {
-                        e.isSuccessful = true;
-                    } else {
-                        e.isUserError = true;
-                    }
+                    e.isUserError = true;
                 }
 
                 if (e.isSuccessful) {
@@ -418,12 +404,15 @@ public class ReplyManager {
                     final HttpClientContext httpClientContext = new HttpClientContext();
                     final CloseableHttpResponse response = client.execute(post, httpClientContext);
                     List<URI> allURIs = httpClientContext.getRedirectLocations();
-                    final String lastURI = allURIs.get(allURIs.size() - 1).toASCIIString();
+                    final String lastURI = allURIs == null ? null : allURIs.get(allURIs.size() - 1).toASCIIString();
                     final String responseString = EntityUtils.toString(response.getEntity(), "UTF-8");
                     Utils.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            listener.onResponse(responseString, client, response, lastURI);
+                            if (lastURI != null)
+                                listener.onResponse(responseString, client, response, lastURI);
+                            else
+                                listener.onResponse(null, client, null, null);
                         }
                     });
                 } catch (IOException e) {

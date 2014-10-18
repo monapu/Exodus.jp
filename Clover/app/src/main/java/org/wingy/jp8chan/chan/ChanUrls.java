@@ -66,8 +66,8 @@ public class ChanUrls {
     }
 
     // TODO: Implement
-    public static String getDeleteUrl(String board) {
-        return ""; //return "https://sys.4chan.org/" + board + "/imgboard.php";
+    public static String getDeleteUrl() {
+        return getReplyUrl();
     }
 
     public static String getBoardUrlDesktop(String board) {

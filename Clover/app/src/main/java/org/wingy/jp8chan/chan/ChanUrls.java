@@ -48,7 +48,7 @@ public class ChanUrls {
     }
 
     public static String getCountryFlagUrl(String countryCode) {
-        return scheme + "://8chan.co/static/flags/" + countryCode.toLowerCase(Locale.ENGLISH) + ".png";
+        return scheme + "://jp.8chan.co/static/flags/" + countryCode.toLowerCase(Locale.ENGLISH) + ".png";
     }
 
     // TODO: Remove if unused

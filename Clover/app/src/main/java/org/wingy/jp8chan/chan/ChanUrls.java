@@ -47,9 +47,8 @@ public class ChanUrls {
         return scheme + "://jp.8chan.co/static/spoiler.png";
     }
 
-    // TODO: Use https://jp.8chan.co/static/flags/flags.png instead. Somehow...
     public static String getCountryFlagUrl(String countryCode) {
-        return scheme + "://s.4cdn.org/image/country/" + countryCode.toLowerCase(Locale.ENGLISH) + ".gif";
+        return scheme + "://8chan.co/static/flags/" + countryCode.toLowerCase(Locale.ENGLISH) + ".png";
     }
 
     // TODO: Remove if unused
@@ -57,9 +56,10 @@ public class ChanUrls {
         return getCountryFlagUrl(countryCode);
     }
 
+    /* TODO: Implement 8chan board manager
     public static String getBoardsUrl() {
         return scheme + "://jp.8chan.co/boards.json";
-    }
+    }*/
 
     public static String getReplyUrl() {
         //return "https://jp.8chan.co/post.php";

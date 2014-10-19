@@ -426,7 +426,7 @@ public class ReplyFragment extends DialogFragment {
                                                 imageView.setMaxWidth(imageViewContainer.getWidth());
                                                 imageView.setMaxHeight(imageViewContainer.getWidth());
                                                 imageView.setImageBitmap(typedBitmap.bitmap);
-                                                String[] components = draft.fileName.split(".");
+                                                String[] components = draft.fileName.split("\\.");
                                                 if (components.length == 0 || !Arrays.asList(FILE_EXTS).contains(components[components.length - 1].toLowerCase()))
                                                     fileNameView.append("." + typedBitmap.extension);
                                             } else {

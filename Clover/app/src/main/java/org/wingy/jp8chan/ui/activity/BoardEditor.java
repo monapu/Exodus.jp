@@ -42,21 +42,33 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.mobeta.android.dslv.DragSortController;
 import com.mobeta.android.dslv.DragSortListView;
 
+import org.jsoup.parser.Parser;
 import org.wingy.jp8chan.ChanApplication;
 import org.wingy.jp8chan.R;
+import org.wingy.jp8chan.chan.ChanUrls;
 import org.wingy.jp8chan.core.ChanPreferences;
 import org.wingy.jp8chan.core.manager.BoardManager;
+import org.wingy.jp8chan.core.net.ByteArrayRequest;
 import org.wingy.jp8chan.core.model.Board;
 import org.wingy.jp8chan.ui.SwipeDismissListViewTouchListener;
 import org.wingy.jp8chan.utils.ThemeHelper;
 import org.wingy.jp8chan.utils.Utils;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import ch.boye.httpclientandroidlib.entity.StringEntity;
 
 public class BoardEditor extends Activity {
     private final BoardManager boardManager = ChanApplication.getBoardManager();
@@ -102,8 +114,8 @@ public class BoardEditor extends Activity {
                         for (int position : reverseSortedPositions) {
                             if (position >= 0 && position < adapter.getCount()) {
                                 Board b = adapter.getItem(position);
+                                boardManager.removeBoard(b.key);
                                 adapter.remove(b);
-                                b.saved = false;
                             }
                         }
 
@@ -138,7 +150,6 @@ public class BoardEditor extends Activity {
                                 if (position >= 0 && position < adapter.getCount()) {
                                     Board b = adapter.getItem(position);
                                     adapter.remove(b);
-                                    b.saved = false;
                                     adapter.notifyDataSetChanged();
                                 }
                             }
@@ -191,39 +202,58 @@ public class BoardEditor extends Activity {
     }
 
     private void addBoard(String value) {
-        value = value.trim();
-        value = value.replace("/", "");
-        value = value.replace("\\", ""); // what are you doing?!
+        final String code = value.trim()
+                .replace("/", "")
+                .replace("\\", ""); // what are you doing?!
+        final BoardEditor boardEditor = this;
 
         // Duplicate
         for (Board board : list) {
-            if (board.value.equals(value)) {
+            if (board.value.equals(code)) {
                 Toast.makeText(this, R.string.board_add_duplicate, Toast.LENGTH_LONG).show();
 
                 return;
             }
         }
 
-        // Normal add
-        List<Board> all = ChanApplication.getBoardManager().getAllBoards();
-        for (Board board : all) {
-            if (board.value.equals(value)) {
-                board.saved = true;
-                list.add(board);
-                adapter.notifyDataSetChanged();
+        ChanApplication.getVolleyRequestQueue().add(new ByteArrayRequest(
+                ChanUrls.getBoardUrlDesktop(code),
+                new Response.Listener<byte[]>() {
+                    @Override
+                    public void onResponse(byte[] response) {
+                        Pattern titlePattern = Pattern.compile("<title>(.*?)</title>");
+                        String responseString;
+                        try {
+                            responseString = new String(response, "UTF-8");
+                        } catch (UnsupportedEncodingException e) {
+                            responseString = new String();
+                            assert(false);
+                        }
+                        Matcher matcher = titlePattern.matcher(responseString);
+                        if (!matcher.find()) {
+                            Toast.makeText(boardEditor, getString(R.string.board_add_unknown_title) + " " + code, Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        String[] components = matcher.group(1).split(" - ", 2);
+                        if (components.length < 2) {
+                            Toast.makeText(boardEditor, getString(R.string.board_add_unknown_title) + " " + code, Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        Board board = new Board(Parser.unescapeEntities(components[1], false), code, true);
+                        list.add(board);
+                        ChanApplication.getBoardManager().saveBoard(board);
+                        adapter.notifyDataSetChanged();
 
-                Toast.makeText(this, getString(R.string.board_add_success) + " " + board.key, Toast.LENGTH_LONG).show();
-
-                return;
-            }
-        }
-
-        // Unknown
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.board_add_unknown_title)
-                .setMessage(getString(R.string.board_add_unknown, value))
-                .setPositiveButton(R.string.ok, null)
-                .show();
+                        Toast.makeText(boardEditor, getString(R.string.board_add_success) + " " + board.key, Toast.LENGTH_LONG).show();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(boardEditor, getString(R.string.board_add_unknown_title) + " " + code, Toast.LENGTH_LONG).show();
+                    }
+                }
+        ));
     }
 
     private void showAddBoardDialog() {
@@ -382,7 +412,7 @@ public class BoardEditor extends Activity {
             }
 
             List<Board> s = new ArrayList<>();
-            for (Board b : ChanApplication.getBoardManager().getAllBoards()) {
+            for (Board b : ChanApplication.getBoardManager().getSavedBoards()) {
                 if (!haveBoard(b.value) && (showUnsafe || b.workSafe))
                     s.add(b);
             }

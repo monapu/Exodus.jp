@@ -296,12 +296,7 @@ public class ChanReaderRequest extends JsonReaderRequest<List<Post>> {
                     post.rawComment = reader.nextString();
                     break;
                 case "tim":
-                    // TODO: Cache the regex object.
-                    Pattern regex = Pattern.compile("(\\d+)");
-                    Matcher match = regex.matcher(reader.nextString());
-                    if (match.find()) {
-                        post.tim = Long.parseLong(match.group());
-                    }
+                    post.serverFilename = reader.nextString();
                     break;
                 case "time":
                     post.time = reader.nextLong();
@@ -334,9 +329,7 @@ public class ChanReaderRequest extends JsonReaderRequest<List<Post>> {
                     post.replies = reader.nextInt();
                     break;
                 case "filename":
-                    post.serverFilename = reader.nextString();
-                    // 8chan doesn't expose the original filename.
-                    post.originalFilename = post.serverFilename;
+                    post.originalFilename = reader.nextString();
                     break;
                 case "sticky":
                     post.sticky = reader.nextInt() == 1;

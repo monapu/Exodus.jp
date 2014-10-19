@@ -19,6 +19,12 @@ package org.wingy.jp8chan.database;
 
 import android.content.Context;
 
+import com.j256.ormlite.stmt.PreparedDelete;
+import com.j256.ormlite.stmt.StatementBuilder;
+import com.j256.ormlite.support.CompiledStatement;
+import com.j256.ormlite.support.DatabaseConnection;
+import com.j256.ormlite.support.DatabaseResults;
+
 import org.wingy.jp8chan.core.model.Board;
 import org.wingy.jp8chan.core.model.Pin;
 import org.wingy.jp8chan.core.model.SavedReply;
@@ -200,6 +206,21 @@ public class DatabaseManager {
             });
         } catch (Exception e) {
             Logger.e(TAG, "Error updating boards in db", e);
+        }
+    }
+
+    public void removeBoard(final Board board) {
+        try {
+            helper.boardsDao.callBatchTasks(new Callable<Void>() {
+                @Override
+                public Void call() throws SQLException {
+                    helper.boardsDao.delete(board);
+
+                    return null;
+                }
+            });
+        } catch (Exception e) {
+            Logger.e(TAG, "Error setting boards in db", e);
         }
     }
 

@@ -26,10 +26,9 @@ public class Board {
     public Board() {
     }
 
-    public Board(String key, String value, boolean saved, boolean workSafe) {
+    public Board(String key, String value, boolean workSafe) {
         this.key = key;
         this.value = value;
-        this.saved = saved;
         this.workSafe = workSafe;
     }
 
@@ -47,8 +46,6 @@ public class Board {
      */
     @DatabaseField
     public String value;
-    @DatabaseField
-    public boolean saved = false;
     @DatabaseField
     public int order;
     @DatabaseField

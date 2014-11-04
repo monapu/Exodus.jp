@@ -74,7 +74,7 @@ public class BoardManager {
 
     public void removeBoard(String board) {
         for (Board b : allBoards) {
-            if (b.key == board) {
+            if (b.value.equals(board)) {
                 allBoards.remove(b);
                 ChanApplication.getDatabaseManager().removeBoard(b);
                 updateByValueMap();

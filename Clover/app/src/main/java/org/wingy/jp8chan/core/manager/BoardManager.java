@@ -142,7 +142,7 @@ public class BoardManager {
 
     private List<Board> getDefaultBoards() {
         List<Board> list = new ArrayList<>();
-        list.add(new Board("ニュー速VIP@8ch", "vip", true));
+        list.add(new Board("ニュー速VIP@8ch避難所", "news4vip", true));
         list.add(new Board("kenmo", "kenmo", true));
         list.add(new Board("国際", "int", true));
         list.add(new Board("Random", "b", true));

@@ -4,13 +4,13 @@ android {
     signingConfigs {
     }
     compileSdkVersion 19
-    buildToolsVersion '20.0.0'
+    buildToolsVersion '21.0.2'
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 19
 
-        versionName "0.7-jp1"
-        versionCode 42
+        versionName "0.8-jp1"
+        versionCode 43
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7

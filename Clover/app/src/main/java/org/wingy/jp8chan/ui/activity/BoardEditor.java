@@ -114,7 +114,7 @@ public class BoardEditor extends Activity {
                         for (int position : reverseSortedPositions) {
                             if (position >= 0 && position < adapter.getCount()) {
                                 Board b = adapter.getItem(position);
-                                boardManager.removeBoard(b.key);
+                                boardManager.removeBoard(b.value);
                                 adapter.remove(b);
                             }
                         }

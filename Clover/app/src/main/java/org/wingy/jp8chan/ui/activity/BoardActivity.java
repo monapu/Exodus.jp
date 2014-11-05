@@ -56,9 +56,12 @@ import org.wingy.jp8chan.utils.Logger;
 import org.wingy.jp8chan.utils.Utils;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BoardActivity extends BaseActivity implements AdapterView.OnItemSelectedListener, BoardManager.BoardChangeListener {
     private static final String TAG = "BoardActivity";
+    private static final Pattern THREAD_URL_PATTERN = Pattern.compile("(\\d+)\\.html");
 
     private Loadable boardLoadable;
     private Loadable threadLoadable;
@@ -363,7 +366,14 @@ public class BoardActivity extends BaseActivity implements AdapterView.OnItemSel
         if (threadPane.isSlideable()) {
             if (threadPane.isOpen()) {
                 actionBar.setDisplayShowCustomEnabled(true);
+                if (ChanApplication.getBoardManager().getBoardExists(boardLoadable.board)) {
+                    spinnerAdapter.setCustomBoard(null);
+                } else {
+                    spinnerAdapter.setCustomBoard(boardLoadable.board);
+                }
+
                 spinnerAdapter.setBoard(boardLoadable.board);
+
                 actionBar.setTitle("");
                 pinDrawerListener.setDrawerIndicatorEnabled(true);
 
@@ -581,18 +591,16 @@ public class BoardActivity extends BaseActivity implements AdapterView.OnItemSel
         if (parts.size() == 1) {
             // Board mode
             String rawBoard = parts.get(0);
-            if (ChanApplication.getBoardManager().getBoardExists(rawBoard)) {
-                startLoadingBoard(new Loadable(rawBoard));
-            } else {
-                handleIntentURIFallback(startUri.toString());
-            }
+            startLoadingBoard(new Loadable(rawBoard));
         } else if (parts.size() >= 3) {
             // Thread mode
             String rawBoard = parts.get(0);
             int no = -1;
 
             try {
-                no = Integer.parseInt(parts.get(2).replaceFirst("\\.html$",""));
+                Matcher matcher = THREAD_URL_PATTERN.matcher(parts.get(2));
+                if (matcher.find())
+                    no = Integer.parseInt(matcher.group(1));
             } catch (NumberFormatException e) {
             }
 
@@ -608,7 +616,7 @@ public class BoardActivity extends BaseActivity implements AdapterView.OnItemSel
                     //}
             }
 
-            if (no >= 0 && ChanApplication.getBoardManager().getBoardExists(rawBoard)) {
+            if (no >= 0) {
                 startLoadingThread(new Loadable(rawBoard, no));
                 if (post >= 0) {
                     threadFragment.highlightPost(post);
@@ -652,6 +660,7 @@ public class BoardActivity extends BaseActivity implements AdapterView.OnItemSel
         private Spinner spinner;
         private List<Board> boards;
         private int lastSelectedPosition = 0;
+        private String customBoard;
 
         public BoardSpinnerAdapter(Context context, Spinner spinner) {
             this.context = context;
@@ -670,6 +679,8 @@ public class BoardActivity extends BaseActivity implements AdapterView.OnItemSel
                     return;
                 }
             }
+            if (customBoard != null)
+                spinner.setSelection(boards.size() + 1);
         }
 
         public void onItemSelected(int position) {
@@ -684,7 +695,7 @@ public class BoardActivity extends BaseActivity implements AdapterView.OnItemSel
                 startLoadingBoard(board);
 
                 lastSelectedPosition = position;
-            } else {
+            } else if (position == boards.size()) {
                 startActivity(new Intent(context, BoardEditor.class));
                 spinner.setSelection(lastSelectedPosition);
             }
@@ -692,7 +703,7 @@ public class BoardActivity extends BaseActivity implements AdapterView.OnItemSel
 
         @Override
         public int getCount() {
-            return boards.size() + 1;
+            return boards.size() + (customBoard == null ? 1 : 2);
         }
 
         @Override
@@ -702,7 +713,7 @@ public class BoardActivity extends BaseActivity implements AdapterView.OnItemSel
 
         @Override
         public int getItemViewType(int position) {
-            return position == getCount() - 1 ? VIEW_TYPE_ADD : VIEW_TYPE_ITEM;
+            return position == boards.size() ? VIEW_TYPE_ADD : VIEW_TYPE_ITEM;
         }
 
         @Override
@@ -714,7 +725,9 @@ public class BoardActivity extends BaseActivity implements AdapterView.OnItemSel
         public String getItem(final int position) {
             switch (getItemViewType(position)) {
                 case VIEW_TYPE_ITEM:
-                    return boards.get(position).key;
+                    if (position < boards.size())
+                        return boards.get(position).key;
+                    return customBoard != null ? customBoard : "";
                 case VIEW_TYPE_ADD:
                     return context.getString(R.string.board_select_add);
                 default:
@@ -748,6 +761,10 @@ public class BoardActivity extends BaseActivity implements AdapterView.OnItemSel
             }
 
             return null;
+        }
+
+        public void setCustomBoard(String board) {
+            this.customBoard = board;
         }
     }
 }

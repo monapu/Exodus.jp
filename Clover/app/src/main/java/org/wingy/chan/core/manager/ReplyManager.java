@@ -238,11 +238,10 @@ public class ReplyManager {
         Logger.i(TAG, "Sending reply request: " + reply.board + ", " + reply.resto);
 
         HttpPost httpPost = new HttpPost(ChanUrls.getReplyUrl());
+        httpPost.addHeader("Referer", reply.resto > 0 ? ChanUrls.getThreadUrlDesktop(reply.board, reply.resto)
+                                                      : ChanUrls.getBoardUrlDesktop(reply.board));
 
         MultipartEntityBuilder entity = MultipartEntityBuilder.create();
-
-
-
         entity.addTextBody("name", reply.name, TEXT_UTF_8);
         entity.addTextBody("email", reply.email, TEXT_UTF_8);
         entity.addTextBody("subject", reply.subject, TEXT_UTF_8);

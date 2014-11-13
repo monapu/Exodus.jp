@@ -9,8 +9,8 @@ android {
         minSdkVersion 14
         targetSdkVersion 19
 
-        versionName "0.8-jp1"
-        versionCode 43
+        versionName "0.9-jp"
+        versionCode 44
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
@@ -68,5 +68,4 @@ dependencies {
     compile 'com.android.support:support-v13:19.1.+'
     compile 'com.koushikdutta.ion:ion:1.+'
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.0.+'
-    compile files('libs/httpclientandroidlib-1.2.1.jar')
 }

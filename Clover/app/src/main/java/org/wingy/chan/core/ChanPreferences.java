@@ -57,7 +57,7 @@ public class ChanPreferences {
         String path = p().getString("preference_image_save_location", null);
         File file;
         if (path == null) {
-            file = new File(Environment.getExternalStorageDirectory() + File.separator + "Clover");
+            file = new File(Environment.getExternalStorageDirectory() + File.separator + "Exodus");
         } else {
             file = new File(path);
         }

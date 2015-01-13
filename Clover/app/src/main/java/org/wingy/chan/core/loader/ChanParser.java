@@ -32,6 +32,7 @@ import android.text.style.TypefaceSpan;
 
 import org.wingy.chan.ChanApplication;
 import org.wingy.chan.R;
+import org.wingy.chan.chan.ChanUrls;
 import org.wingy.chan.core.ChanPreferences;
 import org.wingy.chan.core.model.Post;
 import org.wingy.chan.core.model.PostLinkable;
@@ -53,6 +54,8 @@ import java.util.regex.Pattern;
 
 public class ChanParser {
     private static final Pattern colorPattern = Pattern.compile("color:#([0-9a-fA-F]*)");
+    private static final Pattern postLinkHrefPattern = Pattern.compile("/(\\w+)/res/(\\d+)\\.html#(\\d+)");
+    private static final Pattern boardLinkHrefPattern = Pattern.compile("/(\\w+)/index\\.html");
 
     private static ChanParser instance;
 
@@ -304,12 +307,14 @@ public class ChanParser {
         PostLinkable.Type t = null;
         String key = null;
         Object value = null;
-        Pattern regex = Pattern.compile("/(\\w+)/res/(\\d+)\\.html#(\\d+)");
-        Matcher matcher = regex.matcher(href);
-        if (anchor.text().startsWith(">>") && matcher.find()) {
-            String board = matcher.group(1);
-            int threadId = Integer.parseInt(matcher.group(2));
-            int postId = Integer.parseInt(matcher.group(3));
+
+        Matcher postLinkMatcher = postLinkHrefPattern.matcher(href);
+        Matcher boardLinkMatcher = boardLinkHrefPattern.matcher(href);
+
+        if (anchor.text().startsWith(">>") && postLinkMatcher.find()) {
+            String board = postLinkMatcher.group(1);
+            int threadId = Integer.parseInt(postLinkMatcher.group(2));
+            int postId = Integer.parseInt(postLinkMatcher.group(3));
             if (threadId != post.resto || !board.equals(post.board)) {
                 // link to another thread
                 PostLinkable.ThreadLink threadLink = new PostLinkable.ThreadLink(board, threadId, postId);
@@ -334,6 +339,11 @@ public class ChanParser {
                     key += " (You)";
                 }
             }
+        } else if (anchor.text().startsWith(">>") && boardLinkMatcher.find()) {
+            // board link
+            t = PostLinkable.Type.BOARD;
+            key = anchor.text();
+            value = boardLinkMatcher.group(1);
         } else {
             // normal link
             t = PostLinkable.Type.LINK;

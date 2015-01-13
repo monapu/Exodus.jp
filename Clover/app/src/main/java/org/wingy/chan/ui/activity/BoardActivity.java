@@ -231,6 +231,12 @@ public class BoardActivity extends BaseActivity implements AdapterView.OnItemSel
     }
 
     @Override
+    public void onOpenBoard(Loadable board) {
+        startLoadingBoard(board);
+        threadPane.openPane();
+    }
+
+    @Override
     public void onThreadLoaded(Loadable loadable, List<Post> posts) {
         updateActionBarState();
         pinnedAdapter.notifyDataSetChanged();

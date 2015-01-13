@@ -28,7 +28,7 @@ import org.wingy.chan.utils.ThemeHelper;
  */
 public class PostLinkable extends ClickableSpan {
     public static enum Type {
-        QUOTE, LINK, SPOILER, THREAD
+        QUOTE, LINK, SPOILER, THREAD, BOARD
     }
 
     public final Post post;
@@ -55,7 +55,7 @@ public class PostLinkable extends ClickableSpan {
 
     @Override
     public void updateDrawState(TextPaint ds) {
-        if (type == Type.QUOTE || type == Type.LINK || type == Type.THREAD) {
+        if (type == Type.QUOTE || type == Type.LINK || type == Type.THREAD ||type == Type.BOARD) {
             if (type == Type.QUOTE) {
                 if (value instanceof Integer && post.getLinkableListener() != null && (Integer)value == post.getLinkableListener().getHighlightQuotesWithNo()) {
                     ds.setColor(ThemeHelper.getInstance().getHighlightQuoteColor());

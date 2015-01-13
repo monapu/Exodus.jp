@@ -92,6 +92,8 @@ public abstract class BaseActivity extends Activity implements PanelSlideListene
 
     abstract public void onOpenThread(Loadable thread);
 
+    abstract public void onOpenBoard(Loadable thread);
+
     abstract public void onThreadLoaded(Loadable loadable, List<Post> posts);
 
     @Override

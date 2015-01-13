@@ -211,6 +211,11 @@ public class ThreadFragment extends Fragment implements ThreadManager.ThreadMana
     }
 
     @Override
+    public void onOpenBoard(final Loadable board) {
+        baseActivity.onOpenBoard(board);
+    }
+
+    @Override
     public ThreadManager.ViewMode getViewMode() {
         return viewMode;
     }

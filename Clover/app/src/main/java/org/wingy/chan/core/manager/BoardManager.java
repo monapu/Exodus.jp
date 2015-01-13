@@ -144,11 +144,11 @@ public class BoardManager {
         List<Board> list = new ArrayList<>();
         list.add(new Board("Video Games", "v", true));
         list.add(new Board("Animu and Mango", "a", true));
-        list.add(new Board("Comics & Cartoons", "co", true));
         list.add(new Board("Politically Incorrect", "pol", true));
-        list.add(new Board("GamerGate", "gg", true));
+        list.add(new Board("GamerGate", "gamergate", true));
         list.add(new Board("Technology", "tech", true));
         list.add(new Board("Traditional Games", "tg", true));
+        list.add(new Board("Comics & Cartoons", "co", true));
         list.add(new Board("Sports", "sp", true));
         list.add(new Board("Fitness", "fit", true));
         return list;

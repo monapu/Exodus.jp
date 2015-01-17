@@ -58,11 +58,11 @@ public class ChanUrls {
 
     /* TODO: Implement 8chan board manager
     public static String getBoardsUrl() {
-        return scheme + "://jp.8chan.co/boards.json";
+        return scheme + "://jp.8ch.net/boards.json";
     }*/
 
     public static String getReplyUrl() {
-        //return "https://jp.8chan.co/post.php";
+        //return "https://jp.8ch.net/post.php";
         return scheme + "://jp.8ch.net/post.php";
     }
 

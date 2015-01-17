@@ -329,7 +329,13 @@ public class ChanReaderRequest extends JsonReaderRequest<List<Post>> {
                     post.replies = reader.nextInt();
                     break;
                 case "filename":
-                    post.originalFilename = reader.nextString();
+                    try {
+                        post.originalFilename = reader.nextString();
+                    } catch (Exception ex) {
+                        // Sometimes 8chan returns boolean |false| for filename. |post.finish()| sets this to serverFilename.
+                        reader.skipValue();
+                        post.originalFilename = null;
+                    }
                     break;
                 case "sticky":
                     post.sticky = reader.nextInt() == 1;

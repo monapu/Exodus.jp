@@ -9,8 +9,8 @@ android {
         minSdkVersion 14
         targetSdkVersion 19
 
-        versionName "0.9-jp"
-        versionCode 44
+        versionName "0.10-jp"
+        versionCode 45
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
@@ -43,7 +43,7 @@ android {
             if (doSign) {
                 signingConfig signingConfigs.release
             }
-            runProguard true
+            minifyEnabled true
             proguardFiles 'proguard.cfg'
         }
         beta.initWith(buildTypes.release)

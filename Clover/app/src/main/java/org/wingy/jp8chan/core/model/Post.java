@@ -128,7 +128,10 @@ public class Post {
         }
 
         if (hasImage) {
-            if (serverFilename == null || originalFilename == null || ext == null || imageWidth <= 0 || imageHeight <= 0)
+            if (serverFilename != null && originalFilename == null)
+                originalFilename = serverFilename;
+
+            if (serverFilename == null || ext == null || imageWidth <= 0 || imageHeight <= 0)
                 return false;
 
             imageUrl = ChanUrls.getImageUrl(board, serverFilename, ext, false);

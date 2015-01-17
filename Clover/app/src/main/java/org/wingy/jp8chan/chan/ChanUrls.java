@@ -28,27 +28,27 @@ public class ChanUrls {
     }
 
     public static String getCatalogUrl(String board) {
-        return scheme + "://jp.8chan.co/" + board + "/catalog.json";
+        return scheme + "://jp.8ch.net/" + board + "/catalog.json";
     }
 
     public static String getPageUrl(String board, int pageNumber) {
-        return scheme + "://jp.8chan.co/" + board + "/" + pageNumber + ".json";
+        return scheme + "://jp.8ch.net/" + board + "/" + pageNumber + ".json";
     }
 
     public static String getThreadUrl(String board, int no) {
-        return scheme + "://jp.8chan.co/" + board + "/res/" + no + ".json";
+        return scheme + "://jp.8ch.net/" + board + "/res/" + no + ".json";
     }
 
     public static String getImageUrl(String board, String code, String extension, boolean thumb) {
-        return scheme + "://jp.8chan.co/" + board + (thumb ? "/thumb/" : "/src/") + code + "." + extension;
+        return scheme + "://jp.8ch.net/" + board + (thumb ? "/thumb/" : "/src/") + code + "." + extension;
     }
 
     public static String getSpoilerUrl() {
-        return scheme + "://jp.8chan.co/static/spoiler.png";
+        return scheme + "://jp.8ch.net/static/spoiler.png";
     }
 
     public static String getCountryFlagUrl(String countryCode) {
-        return scheme + "://jp.8chan.co/static/flags/" + countryCode.toLowerCase(Locale.ENGLISH) + ".png";
+        return scheme + "://jp.8ch.net/static/flags/" + countryCode.toLowerCase(Locale.ENGLISH) + ".png";
     }
 
     // TODO: Remove if unused
@@ -63,7 +63,7 @@ public class ChanUrls {
 
     public static String getReplyUrl() {
         //return "https://jp.8chan.co/post.php";
-        return scheme + "://jp.8chan.co/post.php";
+        return scheme + "://jp.8ch.net/post.php";
     }
 
     // TODO: Implement
@@ -72,15 +72,15 @@ public class ChanUrls {
     }
 
     public static String getBoardUrlDesktop(String board) {
-        return scheme + "://jp.8chan.co/" + board + "/";
+        return scheme + "://jp.8ch.net/" + board + "/";
     }
 
     public static String getThreadUrlDesktop(String board, int no) {
-        return scheme + "://jp.8chan.co/" + board + "/res/" + no + ".html";
+        return scheme + "://jp.8ch.net/" + board + "/res/" + no + ".html";
     }
 
     public static String getCatalogUrlDesktop(String board) {
-        return scheme + "://jp.8chan.co/" + board + "/catalog.html";
+        return scheme + "://jp.8ch.net/" + board + "/catalog.html";
     }
 
     // TODO: Implement

@@ -470,6 +470,21 @@ public class ThreadManager implements Loader.LoaderListener {
                     .setTitle(R.string.open_thread_confirmation)
                     .setMessage("/" + thread.board + "/" + thread.no)
                     .show();
+        } else if (linkable.type == PostLinkable.Type.BOARD) {
+            final String board = (String) linkable.value;
+            final Loadable loadable = new Loadable(board);
+
+            new AlertDialog.Builder(activity)
+                    .setNegativeButton(R.string.cancel, null)
+                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(final DialogInterface dialog, final int which) {
+                            threadManagerListener.onOpenBoard(loadable);
+                        }
+                    })
+                    .setTitle(R.string.open_board_confirmation)
+                    .setMessage("/" + board + "/")
+                    .show();
         }
     }
 
@@ -595,6 +610,8 @@ public class ThreadManager implements Loader.LoaderListener {
         public void onRefreshView();
 
         public void onOpenThread(Loadable thread, int highlightedPost);
+
+        public void onOpenBoard(Loadable board);
 
         public ThreadManager.ViewMode getViewMode();
     }
